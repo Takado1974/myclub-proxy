@@ -39,7 +39,19 @@ export async function handler(event) {
     }
 
     const data = await res.json();
-    return corsResponse(JSON.stringify(data), 200, origin);
+    const raw = Array.isArray(data) ? data : (data.events || []);
+    const events = raw.map(ev => {
+      const e = ev.event || ev;
+      return {
+        name:      e.name,
+        starts_at: e.starts_at,
+        ends_at:   e.ends_at,
+        venue_id:  e.venue_id  || null,
+        group_id:  e.group_id  || null,
+      };
+    });
+
+    return corsResponse(JSON.stringify(events), 200, origin);
 
   } catch (err) {
     console.error("Function error:", err);
