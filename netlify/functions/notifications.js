@@ -35,14 +35,7 @@ export async function handler(event) {
     }
 
     const data = await res.json();
-    const raw = Array.isArray(data) ? data : (data.notifications || []);
-    const notifications = raw.map(n => ({
-      title: n.subject,
-      body:  n.details_html,
-      date:  n.published_at,
-    }));
-
-    return corsResponse(JSON.stringify(notifications), 200, origin);
+    return corsResponse(JSON.stringify(data), 200, origin);
 
   } catch (err) {
     console.error("Function error:", err);
