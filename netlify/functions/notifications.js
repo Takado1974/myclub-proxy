@@ -15,13 +15,9 @@ export async function handler(event) {
   }
 
   try {
-    const today = new Date().toISOString().split("T")[0];
-
-    const url = `https://${process.env.MYCLUB_DOMAIN}.myclub.fi/api/events?` +
+    const url = `https://${process.env.MYCLUB_DOMAIN}.myclub.fi/api/notifications?` +
       new URLSearchParams({
-        group_id:   process.env.MYCLUB_GROUP_ID,
-        start_date: today,
-        limit:      20,
+        group_id: process.env.MYCLUB_GROUP_ID,
       });
 
     const res = await fetch(url, {
@@ -39,16 +35,14 @@ export async function handler(event) {
     }
 
     const data = await res.json();
-    const raw = Array.isArray(data) ? data : (data.events || []);
-    const events = raw.map(ev => ({
-      name:       ev.name,
-      starts_at:  ev.starts_at,
-      ends_at:    ev.ends_at,
-      venue_id:   ev.venue_id  || null,
-      group_id:   ev.group_id  || null,
+    const raw = Array.isArray(data) ? data : (data.notifications || []);
+    const notifications = raw.map(n => ({
+      title: n.subject,
+      body:  n.details_html,
+      date:  n.published_at,
     }));
 
-    return corsResponse(JSON.stringify(events), 200, origin);
+    return corsResponse(JSON.stringify(notifications), 200, origin);
 
   } catch (err) {
     console.error("Function error:", err);
