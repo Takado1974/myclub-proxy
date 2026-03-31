@@ -40,7 +40,7 @@ export async function handler(event) {
       const notif = n.notification || n;
       return {
         title: notif.subject,
-        body:  notif.details,
+        body:  notif.details_html || notif.details,
         date:  notif.published_at,
       };
     });
